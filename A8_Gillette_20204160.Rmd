@@ -1,5 +1,5 @@
 ---
-title: "Dragon_Phylogeny"
+title: "Dragon Phylogeny"
 author: "EGillette"
 date: "2025-03-06"
 output: html_document
@@ -13,7 +13,7 @@ https://github.com/EmiliagG/BOL432_Assignment8.git
 
 ## The Mystery of Dragons 
 
-Over the past 4000 years of human history, dragons have been referenced in folklore and artwork repeatedly [1]. Whether these mythical creatures are perceived as fearsome treasure-hoarders or symbols of luck varies across cultures [1].Given dragons seem to have similar traits to modern animals, shared derived characteristics among dragons based on visual analysis of artwork and pottery across geographic space and time can be used to construct a proposed phylogeny of dragons. 
+Over the past 4000 years of human history, dragons have been referenced in folklore and artwork repeatedly [1]. Whether these mythical creatures are perceived as fearsome treasure-hoarders or symbols of luck varies across cultures [1]. Given dragons seem to have similar traits to modern animals, shared derived characteristics among dragons based on visual analysis of artwork and pottery across geographic space and time can be used to construct a proposed phylogeny of dragons. 
 
 Recent studies have uncovered artwork on three more dragons which could provide new insights into the originally proposed dragon phylogeny on Threadless. Using the data available at: https://github.com/ColauttiLab/DragonPhylogeny, artwork of dragons from Egypt (Figure 1), Iraq (Figure 2), and Korea (Figure 3) will be added to generate a new phylogeny with potentially novel insights into the macro-evolution of these ancient creatures.
 
@@ -25,7 +25,7 @@ Recent studies have uncovered artwork on three more dragons which could provide 
 
 ![**Figure 3.** "Dragon Jar", at the Metropolitan Museum of Art, New York, https://www.metmuseum.org/art/collection/search/328299](C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Eight/BOL432_Assignment8/images/Korea Dragon.png){width=30%}
 
-## Methods: Adding the dragons and coding their characteristics
+## Methods: Adding the Dragons to Nexus and Coding their Traits
 ```{r, message=FALSE, warning=FALSE, results='hide'}
 library(dplyr)
 library(tidyr)
@@ -113,7 +113,7 @@ for (i in 1:length(dragonNex)){
 
 ## Results: Distance Matrix and the Phylogenetic Tree
 
-```{r, fig.height=4, fig.width = 6, warning=FALSE, message=FALSE, fig.align='center'}
+```{r, fig.height=5, fig.width = 7, warning=FALSE, message=FALSE, fig.align='center'}
 #convert to data.frame object and then a matrix
 library(reshape2)
 
@@ -131,10 +131,10 @@ library(viridis)
 #plot matrix
 ggplot(data = forMelt, aes(x=Query, y=Subject, fill=Distance)) +
   geom_tile() +scale_fill_viridis(option="F") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) + theme(text=element_text(size =7.5))
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) + theme(text=element_text(size =6))
 ```
 
-**Figure 4.**Distance matrix comparing the distances between the binary coded traits for n=80 dragons. 
+**Figure 4.** Distance matrix comparing the distances between the binary coded traits for n=80 dragons. 
 
 The distance matrix shows some clusters are more related than others, providing insights into the evolution of dragons and their traits. 
 
