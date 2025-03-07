@@ -1,0 +1,160 @@
+---
+title: "Dragon_Phylogeny"
+author: "EGillette"
+date: "2025-03-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+https://github.com/EmiliagG/BOL432_Assignment8.git
+
+## The Mystery of Dragons 
+
+Over the past 4000 years of human history, dragons have been referenced in folklore and artwork repeatedly[1].Whether these mythical creatures are perceived as fearsome treasure-hoarders or symbols of luck varies across cultures [1].Given dragons seem to have similar traits to modern animals, shared derived characteristics among dragons based on visual analysis of artwork and pottery across geographic space and time can be used to construct a proposed phylogeny of dragons. 
+
+Recent archaeological studies have uncovered artwork on three more dragons which could provide new insights into the originally proposed phylogeny on Threadless.Using the data available at: https://github.com/ColauttiLab/DragonPhylogeny, artwork of dragons from Egypt (Figure 1), Iraq (Figure 2), and Korea (Figure 3) will be added to generate a new phylogeny with potentially novel insights into the macro-evolution of these ancient creatures.
+
+"C:\Users\emili\Documents\Queen's\Courses\Fifth Year\BIOL 432\Week Eight\BOL432_Assignment8\images\Ouroborous_Egypt.jpg"
+
+![**Figure 1.** "Ouroboros" by Lucas Jennis, from the Hallie Ford Museum of Art Exhibits, https://library.willamette.edu/hfma/omeka/items/show/176](C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Eight/BOL432_Assignment8/images/Ouroborous_Egypt.jpg){width=40%}
+![**Figure 2.** "Relief of a mushhushshu dragon", Lent by the Vorderasiatisches Museum, Berlin, VA Bab 4757 to the Metropolitan Museum of Art, NY.  https://www.metmuseum.org/art/collection/search/328299](C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Eight/BOL432_Assignment8/images/MesopotamiaDragon.png){width=40%}
+![**Figure 3.** "Dragon Jar", at the Metropolitan Museum of Art, NY.  https://www.metmuseum.org/art/collection/search/328299](C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Eight/BOL432_Assignment8/images/Korea Dragon.png){width=40%}
+
+## Methods: Adding the dragons and coding their characteristics
+```{r}
+library(dplyr)
+library(tidyr)
+
+#import the data with the new dragon characteristics
+dragons<-read.csv("C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Eight/BOL432_Assignment8/input/TraitMatrixRaw.csv",header=T)
+str(dragons)
+tail(dragons)
+
+Egyptian75<-subset(dragons, Origin == "Egyptian")
+Iraq76<-subset(dragons, Origin == "Iraq")
+Korean77<-subset(dragons, Origin == "Korean")
+
+traitcodes<-read.csv("C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Eight/BOL432_Assignment8/input/TraitCodes.csv",header=T, colClasses="character")
+
+head(traitcodes)
+
+#I cannot figure out a way to automate the coding process for converting the string values into the binary codes so I am doing this manually:
+
+EgyptianBinary <- data.frame(Appendage = "1101", Mass = "0111", Bodytype="01", Clawtype="1000",
+                   Dorsalridges = "100000", EarMorph = "001", eyemorph = "100", Eyeposition="1",
+                   Horntype="000", NosePosition = "1", Nasalmorph="0", skindors="100000",
+                   skinhead = "110000", skinven = "000001", snout = "0001", tail="01",teeth="1000", 
+                   toesopps="?", toenum="110000", tongelen="?", tonguemorph = "??", 
+                   ventralplate="?", whiskers="00", wingstr="10", wingtype="100")
+
+IraqBinary <- data.frame(Appendage = "1001", Mass = "0001", Bodytype="01", Clawtype="1100", 
+                Dorsalridges = "000000", EarMorph = "001", eyemorph = "000", Eyeposition="0",
+                Horntype="111", NosePosition = "0", Nasalmorph= "0", skindors="100000",
+                skinhead ="100000", skinven = "??????", snout = "1000", tail="01", teeth="????", 
+                toesopps="?", toenum="??????", tongelen="0", tonguemorph = "01", 
+                ventralplate="?",whiskers="00", wingstr="??", wingtype="???")
+
+KoreanBinary <-data.frame(Appendage = "1001", Mass = "1111", Bodytype="01", Clawtype="1100", 
+                  Dorsalridges = "011000", EarMorph = "000", eyemorph = "001", Eyeposition="1",
+                  Horntype="110", NosePosition = "1", Nasalmorph="?", skindors="000001", 
+                  skinhead ="000110", skinven = "110000", snout = "1100", tail="00", teeth="1000", 
+                  toesopps="?", toenum="110000", tongelen="1", tonguemorph = "00",
+                  ventralplate="?", whiskers="11", wingstr="??", wingtype="???")
+
+Egyptian75<-strsplit(paste(EgyptianBinary, collapse = ""), "")
+Iraq76<-strsplit(paste(IraqBinary, collapse=""), "")
+Korean77<-strsplit(paste(KoreanBinary, collapse = ""), "")
+
+#append to the nexus file
+dragonNex<-read.nexus.data("./input/DragonMatrix.nex")
+
+dragonNex<-append(dragonNex,Egyptian75)
+dragonNex<-append(dragonNex,Iraq76)
+dragonNex<-append(dragonNex,Korean77)
+
+names(dragonNex)[78]<-"75Egyptian"
+names(dragonNex)[79]<-"76Iraq"
+names(dragonNex)[80]<-"77Korean"
+
+write.nexus.data(dragonNex,file = "newDragonNex.nex", interleaved = FALSE, gap = "?")
+
+#add the weights from the tutorial
+Weights_data<-read.csv("./Weights.csv")
+Weights<-paste(Weights_data$Weight,collapse="")
+Weights<-strsplit(Weights,split="")[[1]]
+
+which(LETTERS == "G")
+
+#add the values that correspond to the weights
+WeightsNum<-rep(NA,length(Weights))
+for(i in 1:length(WeightsNum)){
+  if(Weights[i] %in% LETTERS){
+    WeightsNum[i]<-which(LETTERS==Weights[i])+9} 
+  else {
+    WeightsNum[i]<-Weights[i]}}
+WeightsNum<-as.numeric(WeightsNum)
+length(WeightsNum)
+
+#multiply weight value by trait value 
+weightdragonNex<-dragonNex
+for (i in 1:length(dragonNex)){
+  RepWeight<-dragonNex[[i]]==1
+  weightdragonNex[[i]][RepWeight]<-WeightsNum[RepWeight]
+  RepWeight<-NA
+  }
+
+```
+
+## Results: Distance Matrices and the Phylogenetic Tree
+
+```{r, fig.height = 7, fig.width = 9}
+#convert to data.frame object and then a matrix
+library(reshape2)
+
+weightdragonNexDF<-data.frame(matrix(unlist(weightdragonNex), ncol=78,byrow=T))
+row.names(weightdragonNexDF)<-names(weightdragonNex)
+
+dragonDist<-dist(weightdragonNexDF,method='euclidean')
+dragonDistmatrix<-as.matrix(dragonDist)
+forMelt<-melt(dragonDistmatrix)
+names(forMelt)<-c("Query","Subject","Distance")
+
+library(ggplot2)
+library(viridis)
+
+#plot matrix
+ggplot(data = forMelt, aes(x=Query, y=Subject, fill=Distance)) +
+  geom_tile() +scale_fill_viridis(option="F") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) + theme(text=element_text(size =9))
+```
+**Figure 4.** Distance matrix comparing the distances between the binary coded traits for n=80 dragons. 
+
+The distance matrix shows some clusters are more related than others, providing insights into the evolution of dragons and their traits. 
+
+```{r, fig.width=8, fig.height=9}
+#create the phylogenetic tree 
+library(ggtree)
+dragonTree<-nj(dragonDist)
+ggtree(dragonTree,layout="circular")
+
+str(dragonTree)
+country<-gsub("[0-9\\.]+([^X]+)X*","\\1",dragonTree$tip.label)
+countryGrp<-split(dragonTree$tip.label, country)
+dragonTreeGrps<-groupOTU(dragonTree,countryGrp)
+
+ MRCA(dragonTreeGrps, .node1=c("75Egyptian", "77Korean"))
+ 
+ggtree(dragonTreeGrps,layout="rectangular", key_glyph = 'rect') + geom_tiplab(size = 3, aes(colour = group)) + 
+    geom_hilight(node=133, fill="gold", alpha = 0.4)+ scale_color_hue(l=45, c=65) + theme(legend.position="none")
+
+```
+
+**Figure 5.** Phylogenetic tree computed using the Neighbour-Joining algorithm for calculating distance. The tip labels are colour-coded based on country groupings, and the three dragons added from Egypt, Iraq, and Korea are highlighted in yellow. 
+
+The results of the dragon phylogeny reveal the three new dragons from Egypt, Iraq, and Korea form a monophyletic clade. These three dragons are also closely related to Japanese and Turkish dragons. This implies a shared common ancestor(likely more similar in characteristics to the Mesopotamian dragon which is older) diverged in characteristics as it established populations moving eastward as gene flow was interrupted, likely by allopatric speciation. 
+
+**References**
+1. Future Planet Team. (2024, February 10) Wise, lucky, terrifying: The surprising 4,000-year history of dragons.BBC News. https://www.bbc.com/future/article/20240208-the-surprising-4000-year-history-of-dragons
