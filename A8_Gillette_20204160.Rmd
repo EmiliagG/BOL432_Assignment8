@@ -13,20 +13,23 @@ https://github.com/EmiliagG/BOL432_Assignment8.git
 
 ## The Mystery of Dragons 
 
-Over the past 4000 years of human history, dragons have been referenced in folklore and artwork repeatedly[1].Whether these mythical creatures are perceived as fearsome treasure-hoarders or symbols of luck varies across cultures [1].Given dragons seem to have similar traits to modern animals, shared derived characteristics among dragons based on visual analysis of artwork and pottery across geographic space and time can be used to construct a proposed phylogeny of dragons. 
+Over the past 4000 years of human history, dragons have been referenced in folklore and artwork repeatedly [1]. Whether these mythical creatures are perceived as fearsome treasure-hoarders or symbols of luck varies across cultures [1].Given dragons seem to have similar traits to modern animals, shared derived characteristics among dragons based on visual analysis of artwork and pottery across geographic space and time can be used to construct a proposed phylogeny of dragons. 
 
-Recent archaeological studies have uncovered artwork on three more dragons which could provide new insights into the originally proposed phylogeny on Threadless.Using the data available at: https://github.com/ColauttiLab/DragonPhylogeny, artwork of dragons from Egypt (Figure 1), Iraq (Figure 2), and Korea (Figure 3) will be added to generate a new phylogeny with potentially novel insights into the macro-evolution of these ancient creatures.
-
-"C:\Users\emili\Documents\Queen's\Courses\Fifth Year\BIOL 432\Week Eight\BOL432_Assignment8\images\Ouroborous_Egypt.jpg"
+Recent studies have uncovered artwork on three more dragons which could provide new insights into the originally proposed dragon phylogeny on Threadless. Using the data available at: https://github.com/ColauttiLab/DragonPhylogeny, artwork of dragons from Egypt (Figure 1), Iraq (Figure 2), and Korea (Figure 3) will be added to generate a new phylogeny with potentially novel insights into the macro-evolution of these ancient creatures.
 
 ![**Figure 1.** "Ouroboros" by Lucas Jennis, from the Hallie Ford Museum of Art Exhibits, https://library.willamette.edu/hfma/omeka/items/show/176](C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Eight/BOL432_Assignment8/images/Ouroborous_Egypt.jpg){width=40%}
-![**Figure 2.** "Relief of a mushhushshu dragon", Lent by the Vorderasiatisches Museum, Berlin, VA Bab 4757 to the Metropolitan Museum of Art, NY.  https://www.metmuseum.org/art/collection/search/328299](C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Eight/BOL432_Assignment8/images/MesopotamiaDragon.png){width=40%}
-![**Figure 3.** "Dragon Jar", at the Metropolitan Museum of Art, NY.  https://www.metmuseum.org/art/collection/search/328299](C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Eight/BOL432_Assignment8/images/Korea Dragon.png){width=40%}
+
+
+![**Figure 2.** "Relief of a mushhushshu dragon", Lent by the Vorderasiatisches Museum, Berlin, VA Bab 4757 to the Metropolitan Museum of Art, New York, https://www.metmuseum.org/art/collection/search/328299](C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Eight/BOL432_Assignment8/images/MesopotamiaDragon.png){width=40%}
+
+
+![**Figure 3.** "Dragon Jar", at the Metropolitan Museum of Art, New York, https://www.metmuseum.org/art/collection/search/328299](C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Eight/BOL432_Assignment8/images/Korea Dragon.png){width=30%}
 
 ## Methods: Adding the dragons and coding their characteristics
-```{r}
+```{r, message=FALSE, warning=FALSE, results='hide'}
 library(dplyr)
 library(tidyr)
+library(ape)
 
 #import the data with the new dragon characteristics
 dragons<-read.csv("C:/Users/emili/Documents/Queen's/Courses/Fifth Year/BIOL 432/Week Eight/BOL432_Assignment8/input/TraitMatrixRaw.csv",header=T)
@@ -108,9 +111,9 @@ for (i in 1:length(dragonNex)){
 
 ```
 
-## Results: Distance Matrices and the Phylogenetic Tree
+## Results: Distance Matrix and the Phylogenetic Tree
 
-```{r, fig.height = 7, fig.width = 9}
+```{r, fig.height=4, fig.width = 6, warning=FALSE, message=FALSE, fig.align='center'}
 #convert to data.frame object and then a matrix
 library(reshape2)
 
@@ -128,24 +131,25 @@ library(viridis)
 #plot matrix
 ggplot(data = forMelt, aes(x=Query, y=Subject, fill=Distance)) +
   geom_tile() +scale_fill_viridis(option="F") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) + theme(text=element_text(size =9))
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) + theme(text=element_text(size =7.5))
 ```
-**Figure 4.** Distance matrix comparing the distances between the binary coded traits for n=80 dragons. 
+
+**Figure 4.**Distance matrix comparing the distances between the binary coded traits for n=80 dragons. 
 
 The distance matrix shows some clusters are more related than others, providing insights into the evolution of dragons and their traits. 
 
-```{r, fig.width=8, fig.height=9}
+```{r, fig.width=8, fig.height=9, message=FALSE, warning=FALSE, fig.align='center'}
 #create the phylogenetic tree 
 library(ggtree)
 dragonTree<-nj(dragonDist)
-ggtree(dragonTree,layout="circular")
+#ggtree(dragonTree,layout="circular")
 
-str(dragonTree)
+#str(dragonTree)
 country<-gsub("[0-9\\.]+([^X]+)X*","\\1",dragonTree$tip.label)
 countryGrp<-split(dragonTree$tip.label, country)
 dragonTreeGrps<-groupOTU(dragonTree,countryGrp)
 
- MRCA(dragonTreeGrps, .node1=c("75Egyptian", "77Korean"))
+#MRCA(dragonTreeGrps, .node1=c("75Egyptian", "77Korean"))
  
 ggtree(dragonTreeGrps,layout="rectangular", key_glyph = 'rect') + geom_tiplab(size = 3, aes(colour = group)) + 
     geom_hilight(node=133, fill="gold", alpha = 0.4)+ scale_color_hue(l=45, c=65) + theme(legend.position="none")
@@ -154,7 +158,7 @@ ggtree(dragonTreeGrps,layout="rectangular", key_glyph = 'rect') + geom_tiplab(si
 
 **Figure 5.** Phylogenetic tree computed using the Neighbour-Joining algorithm for calculating distance. The tip labels are colour-coded based on country groupings, and the three dragons added from Egypt, Iraq, and Korea are highlighted in yellow. 
 
-The results of the dragon phylogeny reveal the three new dragons from Egypt, Iraq, and Korea form a monophyletic clade. These three dragons are also closely related to Japanese and Turkish dragons. This implies a shared common ancestor(likely more similar in characteristics to the Mesopotamian dragon which is older) diverged in characteristics as it established populations moving eastward as gene flow was interrupted, likely by allopatric speciation. 
+The results of the dragon phylogeny reveal the three new dragons from Egypt, Iraq, and Korea form a monophyletic clade. These three dragons are also closely related to Japanese and Turkish dragons. This implies a shared common ancestor diverged in characteristics as it established populations while moving eastward and gene flow was interrupted, likely by allopatric speciation. 
 
 **References**
-1. Future Planet Team. (2024, February 10) Wise, lucky, terrifying: The surprising 4,000-year history of dragons.BBC News. https://www.bbc.com/future/article/20240208-the-surprising-4000-year-history-of-dragons
+1. Future Planet Team. (2024, February 10) Wise, lucky, terrifying: The surprising 4,000-year history of dragons. BBC News. https://www.bbc.com/future/article/20240208-the-surprising-4000-year-history-of-dragons
